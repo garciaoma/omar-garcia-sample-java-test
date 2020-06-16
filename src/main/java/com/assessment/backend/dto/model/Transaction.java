@@ -1,41 +1,53 @@
 package com.assessment.backend.dto.model;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "transaction")
+@Table(name = "TRANSACTION")
 public class Transaction implements Serializable {
 
     @Id
-    @GeneratedValue(generator = "uuid")
-    @Column(name = "id", updatable = false, nullable = false)
+    @GeneratedValue(generator = "UUID")
+    @Column(name = "ID", updatable = false, nullable = false)
+    @Type(type = "org.hibernate.type.UUIDCharType")
     @GenericGenerator(
-        name = "uuid",
+        name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
     private UUID id;
 
-    @Column(name = "amount")
+    @Column(name = "AMOUNT")
+    @NotNull
     private Double amount;
 
-    @Column(name = "description")
+    @Column(name = "DESCRIPTION")
+    @NotNull
     private String description;
 
-    @Column(name = "date")
+    @Column(name = "DATE")
+    @Temporal(TemporalType.DATE)
+    @NotNull
     private Date date;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne()
+    @JoinColumn(name = "USER_ID", nullable = false, referencedColumnName = "ID")
+    private User user;
 
     public UUID getId() {
         return id;
@@ -69,11 +81,11 @@ public class Transaction implements Serializable {
         this.date = date;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

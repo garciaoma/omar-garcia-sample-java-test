@@ -1,8 +1,21 @@
-DROP TABLE IF EXISTS `backend_db`.`transaction`;
-CREATE TABLE `backend_db`.`transaction` (
-    `id` VARCHAR(45) NOT NULL,
-    `amount` DOUBLE NULL,
-    `description` VARCHAR(45) NULL,
-    `date` DATETIME NULL,
-    `user_id` INT NULL,
-PRIMARY KEY (`id`));
+DROP TABLE IF EXISTS `backend_db`.`TRANSACTION`;
+DROP TABLE IF EXISTS `backend_db`.`USER`;
+
+CREATE TABLE `backend_db`.`USER` (
+     `ID` INT NOT NULL,
+     `NAME` VARCHAR(45) NOT NULL,
+     PRIMARY KEY (`ID`));
+
+CREATE TABLE `backend_db`.`TRANSACTION` (
+    `ID` VARCHAR(45) NOT NULL,
+    `AMOUNT` DOUBLE NULL,
+    `DESCRIPTION` VARCHAR(45) NULL,
+    `DATE` DATETIME NULL,
+    `USER_ID` INT NULL,
+    PRIMARY KEY (`ID`),
+    INDEX `TRANSACTION_USER_FK_idx` (`USER_ID` ASC),
+    CONSTRAINT `TRANSACTION_USER_FK`
+        FOREIGN KEY (`USER_ID`)
+            REFERENCES `backend_db`.`user` (`id`)
+            ON DELETE NO ACTION
+            ON UPDATE NO ACTION);
