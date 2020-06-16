@@ -1,11 +1,14 @@
 package com.assessment.backend.service.impl;
 
 import com.assessment.backend.dao.TransactionRepository;
-import com.assessment.backend.dto.model.Transaction;
 import com.assessment.backend.dto.TransactionDTO;
+import com.assessment.backend.dto.model.Transaction;
 import com.assessment.backend.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -16,6 +19,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionDTO create(TransactionDTO transactionDTO) {
         return toTransactionDTO(this.transactionRepository.save(fromDTO(transactionDTO)));
+    }
+
+    @Override
+    public List<TransactionDTO> getAll() {
+        return toTransactionDTOList(transactionRepository.findAll());
+    }
+
+    private List<TransactionDTO> toTransactionDTOList(List<Transaction> transactions) {
+        return transactions.stream().map(this::toTransactionDTO).collect(Collectors.toList());
     }
 
     private TransactionDTO toTransactionDTO(Transaction transaction) {

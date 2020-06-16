@@ -3,10 +3,11 @@ package com.assessment.backend.dto;
 import com.assessment.backend.util.CheckValidTransaction;
 
 import java.util.Date;
+import java.util.UUID;
 
 @CheckValidTransaction
 public class TransactionDTO {
-    private Long transactionId;
+    private UUID transactionId;
     private Double amount;
     private String description;
     private Date date;
@@ -15,7 +16,7 @@ public class TransactionDTO {
     public TransactionDTO() {
     }
 
-    public TransactionDTO(Long transactionId, Double amount, String description, Date date, Long userId) {
+    public TransactionDTO(UUID transactionId, Double amount, String description, Date date, Long userId) {
         this.transactionId = transactionId;
         this.amount = amount;
         this.description = description;
@@ -23,11 +24,11 @@ public class TransactionDTO {
         this.userId = userId;
     }
 
-    public Long getTransactionId() {
+    public UUID getTransactionId() {
         return transactionId;
     }
 
-    public void setTransactionId(Long transactionId) {
+    public void setTransactionId(UUID transactionId) {
         this.transactionId = transactionId;
     }
 
