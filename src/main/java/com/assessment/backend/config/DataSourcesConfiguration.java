@@ -40,7 +40,7 @@ public class DataSourcesConfiguration {
 
     @PersistenceContext(unitName = "backend")
     @Bean(name = "backendEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean firewallEntityManagerFactory(@Qualifier("backendDataSource") DataSource dataSource) {
+    public LocalContainerEntityManagerFactoryBean backendEntityManagerFactory(@Qualifier("backendDataSource") DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em
                 = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());

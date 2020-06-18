@@ -1,5 +1,6 @@
 package com.assessment.backend.service.impl;
 
+import ch.qos.logback.classic.Logger;
 import com.assessment.backend.dao.TransactionRepository;
 import com.assessment.backend.dao.UserRepository;
 import com.assessment.backend.dto.TransactionDTO;
@@ -8,7 +9,9 @@ import com.assessment.backend.dto.TransactionSumDTO;
 import com.assessment.backend.dto.model.Transaction;
 import com.assessment.backend.dto.model.User;
 import com.assessment.backend.service.TransactionService;
+import com.assessment.backend.util.exception.TransactionNotFoundException;
 import com.assessment.backend.util.exception.UserNotFoundException;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,10 +30,14 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+import static net.logstash.logback.argument.StructuredArguments.v;
+
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
     private static final Double ZERO_DOUBLE = 0D;
+    private static Logger logger = (Logger) LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -59,6 +66,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .collect(Collectors.toMap(Transaction::getUser, Transaction::getAmount, Double::sum));
 
         if (sumResult.isEmpty()) {
+            logger.info("No records found for {}", kv("userId", userId));
             TransactionSumDTO transactionSumDTO = new TransactionSumDTO();
             transactionSumDTO.setUserId(userId);
             transactionSumDTO.setSum(ZERO_DOUBLE);
@@ -79,13 +87,13 @@ public class TransactionServiceImpl implements TransactionService {
 
         Map<LocalDate, List<Transaction>> fixedTransactionsMap = populateStartOfMonthDates(transactionsMap);
 
-        List<TransactionReportDTO> collect = fixedTransactionsMap.entrySet().stream()
+        List<TransactionReportDTO> transactions = fixedTransactionsMap.entrySet().stream()
                 .map(week -> getTransactionReportDTO(userId, week))
                 .collect(Collectors.toList());
 
-        populateTotalAmount(collect);
+        populateTotalAmount(transactions);
 
-        return collect;
+        return transactions;
     }
 
     @Override
@@ -106,12 +114,15 @@ public class TransactionServiceImpl implements TransactionService {
     private Map<LocalDate, List<Transaction>> checkAndFixMonth(Map.Entry<LocalDate, List<Transaction>> localDateListEntry) {
         Map<LocalDate, List<Transaction>> monthFixedMap = new TreeMap<>();
         LocalDate startDate = localDateListEntry.getKey();
+        logger.debug("Check and fix month process started with {}", v("transactionsGroupedByWeek", localDateListEntry));
         if (localDateListEntry.getValue().stream().anyMatch(tx -> dateToLocalDate(tx.getDate()).getMonthValue() != startDate.getMonthValue())) {
             Map<LocalDate, List<Transaction>> collect = localDateListEntry.getValue().stream().collect(Collectors.groupingBy(tx -> dateToLocalDate(tx.getDate()).with(TemporalAdjusters.firstDayOfMonth())));
             if (collect.size() == 1) {
+                logger.debug("Single transaction month group detected");
                 Map.Entry<LocalDate, List<Transaction>> item = collect.entrySet().iterator().next();
                 monthFixedMap.put(item.getKey(), item.getValue());
-            } else if (collect.size() > 1 ){
+            } else {
+                logger.debug("Multiple transaction month group detected");
                 Iterator<Map.Entry<LocalDate, List<Transaction>>> iterator = collect.entrySet().iterator();
 
                 Map.Entry<LocalDate, List<Transaction>> item = iterator.next();
@@ -120,6 +131,7 @@ public class TransactionServiceImpl implements TransactionService {
                 monthFixedMap.put(item.getKey(), item.getValue());
             }
         } else {
+            logger.debug("No month group adjustment required detected");
             monthFixedMap.put(startDate, localDateListEntry.getValue());
         }
         return monthFixedMap;
@@ -169,6 +181,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private TransactionDTO toTransactionDTO(Transaction transaction) {
+        if (transaction == null) {
+            logger.error("Transaction not found");
+            throw new TransactionNotFoundException("Transaction not found");
+        }
         TransactionDTO transactionDTO = new TransactionDTO();
             transactionDTO.setTransactionId(transaction.getId());
             transactionDTO.setAmount(transaction.getAmount());
@@ -188,6 +204,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (optionalUser.isPresent()) {
             transaction.setUser(optionalUser.get());
         } else {
+            logger.error("User provided was not found {}", kv("userId", transactionDTO.getUserId()));
             throw new UserNotFoundException("The user doesn't exist");
         }
         return transaction;

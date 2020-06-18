@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="jsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <!-- LOG everything at INFO level -->
+    <root level="info">
+        <appender-ref ref="jsonConsoleAppender" />
+    </root>
+
+    <!-- LOG "com.assessment.backend*" at TRACE level -->
+    <logger name="com.assessment.backend" level="trace" additivity="false">
+        <appender-ref ref="jsonConsoleAppender" />
+    </logger>
+</configuration>
