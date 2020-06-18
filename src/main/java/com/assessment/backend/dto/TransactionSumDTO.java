@@ -1,17 +1,14 @@
 package com.assessment.backend.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class TransactionSumDTO implements Serializable {
     private Long userId;
     private Double sum;
 
     public TransactionSumDTO() {
-    }
-
-    public TransactionSumDTO(Long userId, Double sum) {
-        this.userId = userId;
-        this.sum = sum;
     }
 
     public Long getUserId() {
@@ -27,6 +24,6 @@ public class TransactionSumDTO implements Serializable {
     }
 
     public void setSum(Double sum) {
-        this.sum = sum;
+        this.sum = new BigDecimal(sum).setScale(2, RoundingMode.FLOOR).doubleValue();
     }
 }

@@ -2,25 +2,17 @@ package com.assessment.backend.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class TransactionReportDTO implements Serializable {
     private Long userId;
     private String weekStart;
     private String weekEnd;
     private Long quantity;
-    private BigDecimal amount;
-    private BigDecimal totalAmount;
+    private Double amount;
+    private Double totalAmount;
 
     public TransactionReportDTO() {
-    }
-
-    public TransactionReportDTO(Long userId, String weekStart, String weekEnd, Long quantity, BigDecimal amount, BigDecimal totalAmount) {
-        this.userId = userId;
-        this.weekStart = weekStart;
-        this.weekEnd = weekEnd;
-        this.quantity = quantity;
-        this.amount = amount;
-        this.totalAmount = totalAmount;
     }
 
     public Long getUserId() {
@@ -55,19 +47,19 @@ public class TransactionReportDTO implements Serializable {
         this.quantity = quantity;
     }
 
-    public BigDecimal getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setAmount(Double amount) {
+        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.FLOOR).doubleValue();
     }
 
-    public BigDecimal getTotalAmount() {
+    public Double getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = new BigDecimal(totalAmount).setScale(2, RoundingMode.FLOOR).doubleValue();
     }
 }

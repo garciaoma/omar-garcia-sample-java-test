@@ -18,6 +18,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,10 +59,16 @@ public class TransactionServiceImpl implements TransactionService {
                 .collect(Collectors.toMap(Transaction::getUser, Transaction::getAmount, Double::sum));
 
         if (sumResult.isEmpty()) {
-            return new TransactionSumDTO(userId, ZERO_DOUBLE);
+            TransactionSumDTO transactionSumDTO = new TransactionSumDTO();
+            transactionSumDTO.setUserId(userId);
+            transactionSumDTO.setSum(ZERO_DOUBLE);
+            return transactionSumDTO;
         }
         Map.Entry<User, Double> firstResult = sumResult.entrySet().iterator().next();
-        return new TransactionSumDTO(firstResult.getKey().getId(), firstResult.getValue());
+        TransactionSumDTO transactionSumDTO = new TransactionSumDTO();
+        transactionSumDTO.setUserId(firstResult.getKey().getId());
+        transactionSumDTO.setSum(firstResult.getValue());
+        return transactionSumDTO;
     }
 
     @Override
@@ -99,15 +106,17 @@ public class TransactionServiceImpl implements TransactionService {
     private Map<LocalDate, List<Transaction>> checkAndFixMonth(Map.Entry<LocalDate, List<Transaction>> localDateListEntry) {
         Map<LocalDate, List<Transaction>> monthFixedMap = new TreeMap<>();
         LocalDate startDate = localDateListEntry.getKey();
-        if (localDateListEntry.getValue().stream().anyMatch(tx -> dateToLocalDate(tx.getDate()).getMonth() != startDate.getMonth())) {
+        if (localDateListEntry.getValue().stream().anyMatch(tx -> dateToLocalDate(tx.getDate()).getMonthValue() != startDate.getMonthValue())) {
             Map<LocalDate, List<Transaction>> collect = localDateListEntry.getValue().stream().collect(Collectors.groupingBy(tx -> dateToLocalDate(tx.getDate()).with(TemporalAdjusters.firstDayOfMonth())));
             if (collect.size() == 1) {
                 Map.Entry<LocalDate, List<Transaction>> item = collect.entrySet().iterator().next();
                 monthFixedMap.put(item.getKey(), item.getValue());
             } else if (collect.size() > 1 ){
-                Map.Entry<LocalDate, List<Transaction>> item = collect.entrySet().iterator().next();
+                Iterator<Map.Entry<LocalDate, List<Transaction>>> iterator = collect.entrySet().iterator();
+
+                Map.Entry<LocalDate, List<Transaction>> item = iterator.next();
                 monthFixedMap.put(localDateListEntry.getKey(), item.getValue());
-                item = collect.entrySet().iterator().next();
+                item = iterator.next();
                 monthFixedMap.put(item.getKey(), item.getValue());
             }
         } else {
@@ -117,11 +126,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private void populateTotalAmount(List<TransactionReportDTO> collect) {
-        BigDecimal counter = new BigDecimal(BigInteger.ZERO);
+        Double counter = new Double(ZERO_DOUBLE);
 
         for (TransactionReportDTO transactionReportDTO : collect) {
             transactionReportDTO.setTotalAmount(counter);
-            counter = counter.add(transactionReportDTO.getAmount());
+            counter = counter + transactionReportDTO.getAmount();
         }
     }
 
@@ -147,8 +156,8 @@ public class TransactionServiceImpl implements TransactionService {
         return weekEndDate;
     }
 
-    private BigDecimal getAmountSum(List<Transaction> transactions) {
-        return BigDecimal.valueOf(transactions.stream().mapToDouble(Transaction::getAmount).sum());
+    private Double getAmountSum(List<Transaction> transactions) {
+        return transactions.stream().mapToDouble(Transaction::getAmount).sum();
     }
 
     private LocalDate dateToLocalDate(Date date) {
