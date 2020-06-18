@@ -2,11 +2,12 @@ package com.assessment.backend.dto;
 
 import com.assessment.backend.util.CheckValidTransaction;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
 @CheckValidTransaction
-public class TransactionDTO {
+public class TransactionDTO implements Serializable {
     private UUID transactionId;
     private Double amount;
     private String description;

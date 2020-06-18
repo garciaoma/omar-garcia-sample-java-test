@@ -1,6 +1,8 @@
 package com.assessment.backend.dto;
 
-public class TransactionSumDTO {
+import java.io.Serializable;
+
+public class TransactionSumDTO implements Serializable {
     private Long userId;
     private Double sum;
 

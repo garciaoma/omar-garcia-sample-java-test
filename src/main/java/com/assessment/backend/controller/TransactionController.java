@@ -1,6 +1,7 @@
 package com.assessment.backend.controller;
 
 import com.assessment.backend.dto.TransactionDTO;
+import com.assessment.backend.dto.TransactionReportDTO;
 import com.assessment.backend.dto.TransactionSumDTO;
 import com.assessment.backend.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,5 +42,15 @@ public class TransactionController {
     @RequestMapping(value = "transaction/sum/{userId}", method = RequestMethod.GET)
     public TransactionSumDTO getSumByUser(@PathVariable Long userId) {
         return transactionService.getSumByUser(userId);
+    }
+
+    @RequestMapping(value = "transaction/reporting/{userId}", method = RequestMethod.GET)
+    public List<TransactionReportDTO> getReport(@PathVariable Long userId) {
+        return transactionService.getReport(userId);
+    }
+
+    @RequestMapping(value = "transaction/random", method = RequestMethod.GET)
+    public TransactionDTO getRandom() {
+        return transactionService.getRandom();
     }
 }

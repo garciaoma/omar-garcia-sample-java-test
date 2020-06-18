@@ -1,11 +1,10 @@
 package com.assessment.backend.service;
 
 import com.assessment.backend.dto.TransactionDTO;
+import com.assessment.backend.dto.TransactionReportDTO;
 import com.assessment.backend.dto.TransactionSumDTO;
-import com.assessment.backend.dto.model.User;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public interface TransactionService {
@@ -16,4 +15,8 @@ public interface TransactionService {
     TransactionDTO get(Long userId, UUID uuid);
 
     TransactionSumDTO getSumByUser(Long userId);
+
+    List<TransactionReportDTO> getReport(Long userId);
+
+    TransactionDTO getRandom();
 }
