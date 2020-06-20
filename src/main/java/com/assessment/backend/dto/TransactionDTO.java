@@ -32,7 +32,7 @@ public class TransactionDTO implements Serializable {
     }
 
     public void setAmount(Double amount) {
-        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.FLOOR).doubleValue();
+        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     public String getDescription() {

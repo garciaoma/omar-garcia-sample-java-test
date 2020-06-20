@@ -6,6 +6,7 @@ import com.assessment.backend.dto.TransactionSumDTO;
 import com.assessment.backend.service.TransactionService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,7 @@ public class TransactionController extends BaseController{
     @Autowired
     private TransactionService transactionService;
 
-    @RequestMapping(value = "transaction", method = RequestMethod.POST)
+    @RequestMapping(value = "transaction", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public TransactionDTO addTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
         logger.info("Add transaction with {}", kv("transactionDTO", transactionDTO));

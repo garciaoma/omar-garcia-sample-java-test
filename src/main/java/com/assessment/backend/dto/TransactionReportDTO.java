@@ -52,7 +52,7 @@ public class TransactionReportDTO implements Serializable {
     }
 
     public void setAmount(Double amount) {
-        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.FLOOR).doubleValue();
+        this.amount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     public Double getTotalAmount() {
@@ -60,6 +60,6 @@ public class TransactionReportDTO implements Serializable {
     }
 
     public void setTotalAmount(Double totalAmount) {
-        this.totalAmount = new BigDecimal(totalAmount).setScale(2, RoundingMode.FLOOR).doubleValue();
+        this.totalAmount = new BigDecimal(totalAmount).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 }

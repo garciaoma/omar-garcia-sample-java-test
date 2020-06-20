@@ -24,6 +24,6 @@ public class TransactionSumDTO implements Serializable {
     }
 
     public void setSum(Double sum) {
-        this.sum = new BigDecimal(sum).setScale(2, RoundingMode.FLOOR).doubleValue();
+        this.sum = new BigDecimal(sum).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 }
